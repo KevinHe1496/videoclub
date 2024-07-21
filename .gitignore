@@ -1,3 +1,4 @@
 .vscode/
 entorno_virutal/
 **__pycache__/
+tests/.DS_Store

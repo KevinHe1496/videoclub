@@ -74,6 +74,27 @@ class Pelicula(Model):
             raise TypeError(f"{value} debe ser un entero o instancia de Director")
 
 
+class Genero(Model):
+
+    @classmethod
+    def create_from_dict(cls, diccionario):
+        return cls(int(diccionario["id"]), diccionario["genero"])
+    
+    def __init__(self, genero: str , id: int = -1):
+        self.id = id
+        self.genero = genero
+
+    def __repr__(self) -> str:
+        return f"Genero: ({self.id}):{self.genero}"
+    
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, self.__class__):
+            return self.id == other.id and self.genero == other.genero
+        return False
+    
+    def __hash__(self):
+        return hash((self.id, self.genero))
+
 class DAO(ABC):
     """
     @abstractmethod
@@ -123,3 +144,8 @@ class DAO_CSV_Pelicula(DAO_CSV):
    
 
     model = Pelicula
+
+class DAO_CSV_Genero(DAO_CSV):
+    model = Genero
+
+

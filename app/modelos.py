@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import csv
+import sqlite3
 
 class Model(ABC):
     
@@ -149,3 +150,59 @@ class DAO_CSV_Genero(DAO_CSV):
     model = Genero
 
 
+class DAO_SQLite(DAO):
+    model = None
+    tabla = None
+
+    def __init__(self, path):
+        self.path = path
+        tabla = None
+    
+    def todos(self):
+        """
+        acceder a sqlite y traer todos los regustros de la tabla del modelo
+        con la funcion rows_to_dictlist traerlos en forma de diuccionario
+        devolverlos como instancias de Model
+        """
+
+        con = sqlite3.connect(self.path)
+        cur = con.cursor()
+
+        
+        
+        cur.execute(f"select * from {self.tabla}")
+        nombres = list(map(lambda item: item[0], cur.description))
+
+        lista = self.__rows_to_dictlist(cur.fetchall(), nombres)
+        
+        resultado = []
+
+        # Evitar este segundo bucle( es segundo porque elprimero esta en la lunea  176) haciendo que
+        # rows_to_dicc... devuelva una lista de Modelos y no una lista de diccionarios
+        for registro in lista:
+           resultado.append(self.model.create_from_dict(registro))
+
+           con.close()
+           
+        return resultado
+
+    def __rows_to_dictlist(self, filas, nombres):
+        registros = []
+        for fila in filas:
+            registro = {}
+            pos = 0
+            for nombre in nombres:
+                registro[nombre] = fila[pos]
+                pos += 1
+
+            """
+            for pos, nombre in enumerate(nombres):
+                registro[nombre] = fila[pos]
+            """
+            registros.append(registro)
+        return registros
+
+
+class DAO_SQLite_Director(DAO_SQLite):
+    model = Director
+    tabla = "directores"

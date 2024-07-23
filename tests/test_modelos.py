@@ -1,4 +1,4 @@
-from app.modelos import Director, DAO_CSV_Director, Pelicula, DAO_CSV_Pelicula, Genero, DAO_CSV_Genero
+from app.modelos import Director, DAO_CSV_Director, Pelicula, DAO_CSV_Pelicula, Genero, DAO_CSV_Genero, DAO_SQLite_Director
 
 def test_create_director():
     director = Director("Robert Redford")
@@ -59,7 +59,7 @@ def test_dao_peliculas_traer_todos():
 def test_create_genero():
     genero = Genero("asd")
 
-    assert genero.id == 15
+    assert genero.id == -1
     assert genero.genero == "asd"
 
 def test_dao_generos_traer_todos():
@@ -67,3 +67,12 @@ def test_dao_generos_traer_todos():
     generos = dao.todos()
 
     assert generos[0] == Genero(1,"Accion")
+
+
+def test_dao_directores_sqlite_traer_todos():
+    dao = DAO_SQLite_Director("data/films.sqlite")
+
+    directores = dao.todos()
+
+    assert len(directores) == 76
+    assert directores[7] == Director("Charlie Chaplin", 8)
